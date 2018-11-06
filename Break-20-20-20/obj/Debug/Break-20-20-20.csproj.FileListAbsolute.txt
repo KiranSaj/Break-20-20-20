@@ -1,0 +1,10 @@
+c:\users\kiran.sajanikar\source\repos\Break-20-20-20\Break-20-20-20\Break-20-20-20\bin\Debug\Break-20-20-20.exe.config
+c:\users\kiran.sajanikar\source\repos\Break-20-20-20\Break-20-20-20\Break-20-20-20\bin\Debug\Break-20-20-20.exe
+c:\users\kiran.sajanikar\source\repos\Break-20-20-20\Break-20-20-20\Break-20-20-20\bin\Debug\Break-20-20-20.pdb
+c:\users\kiran.sajanikar\source\repos\Break-20-20-20\Break-20-20-20\Break-20-20-20\obj\Debug\Break-20-20-20.csprojAssemblyReference.cache
+c:\users\kiran.sajanikar\source\repos\Break-20-20-20\Break-20-20-20\Break-20-20-20\obj\Debug\Break_20_20_20.frmBreakSlide.resources
+c:\users\kiran.sajanikar\source\repos\Break-20-20-20\Break-20-20-20\Break-20-20-20\obj\Debug\Break_20_20_20.Properties.Resources.resources
+c:\users\kiran.sajanikar\source\repos\Break-20-20-20\Break-20-20-20\Break-20-20-20\obj\Debug\Break-20-20-20.csproj.GenerateResource.cache
+c:\users\kiran.sajanikar\source\repos\Break-20-20-20\Break-20-20-20\Break-20-20-20\obj\Debug\Break-20-20-20.csproj.CoreCompileInputs.cache
+c:\users\kiran.sajanikar\source\repos\Break-20-20-20\Break-20-20-20\Break-20-20-20\obj\Debug\Break-20-20-20.exe
+c:\users\kiran.sajanikar\source\repos\Break-20-20-20\Break-20-20-20\Break-20-20-20\obj\Debug\Break-20-20-20.pdb
