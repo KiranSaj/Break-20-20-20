@@ -1,70 +1,159 @@
-﻿namespace Break_20_20_20
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace Break_20_20_20;
+
+/// <summary>
+/// A custom label control that fades text in and out using color animation.
+/// </summary>
+public class FadeLabel : Label
 {
-    using System;
-    using System.Drawing;
-    using System.Windows.Forms;
+    private readonly ColorAnimator _colorAnimator = new();
+    private string _currentText = string.Empty;
 
-    public class FadeLabel : Label
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FadeLabel"/> class.
+    /// </summary>
+    public FadeLabel()
     {
-        private ColorAnimator mAnim = new ColorAnimator();
-        private string mText = "";
+        _colorAnimator.Change += OnColorChange;
+    }
 
-        public FadeLabel()
+    /// <summary>
+    /// Gets or sets the foreground color of the label.
+    /// </summary>
+    public override Color ForeColor
+    {
+        get => base.ForeColor;
+        set
         {
-            mAnim.Change += new EventHandler(mAnim_Change);
+            base.ForeColor = value;
+            _colorAnimator.Color = value;
         }
-        public override Color ForeColor
+    }
+
+    /// <summary>
+    /// Gets or sets the text displayed in the label with fade animation.
+    /// </summary>
+    public override string? Text
+    {
+        get => base.Text;
+        set
         {
-            get { return base.ForeColor; }
-            set { base.ForeColor = value; mAnim.Color = value; }
+            if (!string.IsNullOrEmpty(base.Text))
+            {
+                _colorAnimator.Begin();
+            }
+
+            _currentText = base.Text ?? string.Empty;
+            base.Text = value;
         }
-        public override string Text
+    }
+
+    /// <summary>
+    /// Handles the change event of the color animator.
+    /// </summary>
+    private void OnColorChange(object? sender, EventArgs e)
+    {
+        Invalidate();
+    }
+
+    /// <summary>
+    /// Paints the label with the animated color.
+    /// </summary>
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        ArgumentNullException.ThrowIfNull(e);
+
+        string textToDraw = _colorAnimator.Fading ? _currentText : (base.Text ?? string.Empty);
+
+        using var brush = new SolidBrush(_colorAnimator.Color);
+        e.Graphics.DrawString(textToDraw, Font, brush, ClientRectangle);
+    }
+
+    /// <summary>
+    /// Disposes of the resources used by the label.
+    /// </summary>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            get { return base.Text; }
-            set { if (base.Text != "") mAnim.Begin(); mText = base.Text; base.Text = value; }
-        }
-        void mAnim_Change(object sender, EventArgs e)
-        {
-            Invalidate();
-        }
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            string txt = mAnim.Fading ? mText : base.Text;
-            using (Brush br = new SolidBrush(mAnim.Color))
-                e.Graphics.DrawString(txt, this.Font, br, this.ClientRectangle);
+            _colorAnimator?.Dispose();
         }
 
-        internal class ColorAnimator : Timer
-        {
-            public event EventHandler Change;
-            private const int cRate = 5;    // Tweak this
-            private Color mColor;
-            private int mValue = 255;
-            private int mStep = -1;
+        base.Dispose(disposing);
+    }
 
-            public Color Color
+    /// <summary>
+    /// Internal color animator class that handles fade animations using a timer.
+    /// </summary>
+    internal sealed class ColorAnimator : Timer
+    {
+        #region Constants
+
+        private const int AnimationRate = 5;
+
+        #endregion
+
+        #region Fields
+
+        private Color _baseColor = Color.Black;
+        private int _alphaValue = 255;
+        private int _animationStep = -1;
+
+        #endregion
+
+        /// <summary>
+        /// Triggered when the color value changes.
+        /// </summary>
+        public event EventHandler? Change;
+
+        /// <summary>
+        /// Gets or sets the base color for the animation.
+        /// </summary>
+        public Color Color
+        {
+            get => Color.FromArgb(_alphaValue, _baseColor);
+            set => _baseColor = value;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the animation is currently fading.
+        /// </summary>
+        public bool Fading => Enabled && _animationStep < 0;
+
+        /// <summary>
+        /// Begins the fade animation.
+        /// </summary>
+        public void Begin()
+        {
+            _alphaValue = 255;
+            _animationStep = -AnimationRate;
+            Interval = 16;
+            Enabled = true;
+        }
+
+        /// <summary>
+        /// Handles the timer tick event to update the animation.
+        /// </summary>
+        protected override void OnTick(EventArgs e)
+        {
+            _alphaValue += _animationStep;
+
+            if (_alphaValue <= 0)
             {
-                get { return Color.FromArgb(mValue, mColor); }
-                set { mColor = value; }
+                _alphaValue = 0;
+                _animationStep = -_animationStep;
             }
-            public void Begin()
+
+            if (_alphaValue >= 255)
             {
-                mValue = 255;
-                mStep = -cRate;
-                Interval = 16;
-                Enabled = true;
+                _alphaValue = 255;
+                Enabled = false;
             }
-            public bool Fading
-            {
-                get { return Enabled && mStep < 0; }
-            }
-            protected override void OnTick(EventArgs e)
-            {
-                mValue += mStep;
-                if (mValue <= 0) { mValue = 0; mStep = -mStep; }
-                if (mValue >= 255) { mValue = 255; Enabled = false; }
-                if (Change != null) Change(this, EventArgs.Empty);
-            }
+
+            Change?.Invoke(this, EventArgs.Empty);
         }
     }
 }
